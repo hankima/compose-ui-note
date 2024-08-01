@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -32,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,7 +40,7 @@ import loc.example.composablenote72424app.model.Note
 @Composable
 fun NoteSaveScreen(note: Note?, noteColors: List<Color>, modifier: Modifier = Modifier) {
   var showDialog by remember { mutableStateOf(false) }
-  var selectedColor by remember { mutableStateOf(Color.White) }
+  val selectedColor by remember { mutableStateOf(Color.White) }
   Column(modifier = modifier.fillMaxSize()) {
     Column(
         modifier = modifier
@@ -82,25 +80,16 @@ fun NoteSaveScreen(note: Note?, noteColors: List<Color>, modifier: Modifier = Mo
             onCheckedChange = {}
         )
       }
-      Row(modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
-//          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically) {
+      Row(
+          modifier = Modifier
+            .padding(top = 16.dp)
+            .fillMaxWidth(),
+          verticalAlignment = Alignment.CenterVertically
+      ) {
         Text(
             text = stringResource(R.string.picked_color),
             modifier = Modifier.fillMaxWidth(fraction = .9f)
         )
-        /*Image(
-            painterResource(id = R.drawable.note_circle),
-            contentDescription = null,
-            modifier = Modifier
-              .size(size = 32.dp)
-              .border(width = 1.dp, color = Color.Black, shape = CircleShape)
-              .clip(shape = CircleShape)
-              .clickable {
-                showDialog = true
-              },
-            contentScale = ContentScale.Crop
-        )*/
         Box(
             modifier = Modifier
               .size(size = 32.dp)
@@ -134,6 +123,7 @@ fun ColorPicker(
           Text(text = "Close")
         }
       },
+      modifier = modifier,
       title = { Text(text = "Pick a color") },
       text = {
         val cells = GridCells.Fixed(count = 2)

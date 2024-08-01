@@ -45,8 +45,8 @@ fun NoteList(model: NoteListViewModel, onNoteClick: (Note) -> Unit, modifier: Mo
   val items = uiState.notes
   LazyColumn(modifier = modifier) {
     items(items = items) {
-      NoteItem(item = it, onNoteClick = {
-        onNoteClick(it)
+      NoteItem(item = it, onNoteClick = { note ->
+        onNoteClick(note)
       })
     }
   }

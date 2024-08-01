@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NoteListViewModel @Inject constructor() : ViewModel() {
-  private val _uiState = MutableStateFlow<NoteUiState>(NoteUiState())
+  private val _uiState = MutableStateFlow(NoteUiState())
   val uiState = _uiState.asStateFlow()
   val noteColors by lazy {
     listOf(
