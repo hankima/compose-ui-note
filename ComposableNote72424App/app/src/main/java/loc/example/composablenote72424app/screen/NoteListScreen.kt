@@ -30,57 +30,57 @@ import loc.example.composablenote72424app.vm.NoteListViewModel
 
 @Composable
 fun NoteListScreen(
-  model: NoteListViewModel,
-  onNoteClick: (Note) -> Unit,
-  modifier: Modifier = Modifier
+    model: NoteListViewModel,
+    onNoteClick: (Note) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-  NoteList(model = model, onNoteClick = onNoteClick, modifier = modifier)
+    NoteList(model = model, onNoteClick = onNoteClick, modifier = modifier)
 }
 
 @Composable
 fun NoteList(model: NoteListViewModel, onNoteClick: (Note) -> Unit, modifier: Modifier = Modifier) {
-  val uiState by model.uiState.collectAsState()
-  val items = uiState.notes
-  LazyColumn(modifier = modifier) {
-    items(items = items) {
-      NoteItem(item = it, onNoteClick = { note ->
-        onNoteClick(note)
-      })
+    val uiState by model.uiState.collectAsState()
+    val items = uiState.notes
+    LazyColumn(modifier = modifier) {
+        items(items = items) {
+            NoteItem(item = it, onNoteClick = { note ->
+                onNoteClick(note)
+            })
+        }
     }
-  }
 }
 
 @Composable
 fun NoteItem(item: Note, onNoteClick: (Note) -> Unit, modifier: Modifier = Modifier) {
-  Column {
     Row(
         modifier = modifier
           .fillMaxSize()
-          .padding(horizontal = 32.dp, vertical = 24.dp)
-          .clickable { onNoteClick(item) },
+          .clickable { onNoteClick(item) }
+          .padding(horizontal = 32.dp, vertical = 24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-      Box(
-          modifier = Modifier
-            .size(size = 48.dp)
-            .clip(shape = CircleShape)
-            .background(color = item.color, shape = CircleShape)
-            .border(width = 1.dp, color = Color.Black, shape = CircleShape)
-      )
-      Column(modifier = Modifier.padding(start = 24.dp)) {
-        Text(
-            text = item.title,
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W400)
+        Box(
+            modifier = Modifier
+              .size(size = 48.dp)
+              .clip(shape = CircleShape)
+              .background(color = item.color, shape = CircleShape)
+              .border(width = 1.dp, color = Color.Black, shape = CircleShape)
         )
-        Text(
-            text = item.body,
-            modifier = Modifier.padding(top = 2.dp),
-            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp)
-        )
-      }
+        Column(modifier = Modifier.padding(start = 24.dp)) {
+            Text(
+                text = item.title,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W400)
+            )
+            Text(
+                text = item.body,
+                modifier = Modifier.padding(top = 2.dp),
+                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp)
+            )
+        }
     }
     HorizontalDivider()
-  }
+    Column {
+    }
 }
 
 //@Preview

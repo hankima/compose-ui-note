@@ -1,14 +1,16 @@
 <resources>
-  <string name="app_name">Composable Note 72424 App</string>
-  <string name="add_note">Add Note</string>
-  <string name="home">Home</string>
-  <string name="notes">Notes</string>
-  <string name="trash">Trash</string>
-  <string name="save_note">Sate Note</string>
-  <string name="title">Title</string>
-  <string name="enter_note_title_here">Enter note title here..</string>
-  <string name="body">Body</string>
-  <string name="enter_note_body_here">Enter note body here..</string>
-  <string name="can_note_be_checked_off">Can note be checked off?</string>
-  <string name="picked_color">Picked color</string>
+    <!--  <string name="app_name">Composable Note 72424 App</string>-->
+
+    <string name="app_name">JetNotes</string>
+    <string name="add_note">Add Note</string>
+    <string name="home">Home</string>
+    <string name="notes">Notes</string>
+    <string name="trash">Trash</string>
+    <string name="save_note">Sate Note</string>
+    <string name="title">Title</string>
+    <string name="enter_note_title_here">Enter note title here..</string>
+    <string name="body">Body</string>
+    <string name="enter_note_body_here">Enter note body here..</string>
+    <string name="can_note_be_checked_off">Can note be checked off?</string>
+    <string name="picked_color">Picked color</string>
 </resources>
