@@ -62,6 +62,7 @@ fun MainApp(modifier: Modifier = Modifier) {
         ModalNavigationDrawer(
             drawerContent = {
                 DrawerContent(
+                    drawerState = drawerState,
                     onHomeClick = {
                         navCtrl.navigate(Route.NOTE_LIST.path)
                     },
@@ -80,11 +81,11 @@ fun MainApp(modifier: Modifier = Modifier) {
 
 @Composable
 fun DrawerContent(
-    modifier: Modifier = Modifier,
+    drawerState: DrawerState,
     onHomeClick: () -> Unit,
-    onTrashClick: () -> Unit
+    onTrashClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed) { true }
     val corScope = rememberCoroutineScope()
     ModalDrawerSheet(modifier = modifier) {
         Row(
