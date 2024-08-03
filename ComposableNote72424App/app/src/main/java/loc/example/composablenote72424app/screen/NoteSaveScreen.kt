@@ -35,12 +35,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import loc.example.composablenote72424app.R
-import loc.example.composablenote72424app.model.Note
 
 @Composable
-fun NoteSaveScreen(note: Note?, noteColors: List<Color>, modifier: Modifier = Modifier) {
+fun NoteSaveScreen(
+  title: String,
+  body: String,
+  canBeCheckedOff: Boolean,
+  color: Color,
+  noteColors: List<Color>,
+  onTitleChange: (String) -> Unit,
+  onBodyChange: (String) -> Unit,
+  onCanBeCheckedOff: (Boolean) -> Unit,
+  onColorSelect: (Color) -> Unit,
+  modifier: Modifier = Modifier
+) {
   var showDialog by remember { mutableStateOf(false) }
-  val selectedColor by remember { mutableStateOf(Color.White) }
+  var titleState by remember { mutableStateOf(title) }
+  var bodyState by remember { mutableStateOf(body) }
+  var canBeCheckedOffState by remember { mutableStateOf(canBeCheckedOff) }
+  var colorState by remember { mutableStateOf(color) }
   Column(modifier = modifier.fillMaxSize()) {
     Column(
         modifier = modifier
@@ -48,9 +61,10 @@ fun NoteSaveScreen(note: Note?, noteColors: List<Color>, modifier: Modifier = Mo
           .padding(horizontal = 8.dp)
     ) {
       TextField(
-          value = note?.title.orEmpty(),
+          value = titleState,
           onValueChange = {
-
+            titleState = it
+            onTitleChange(it)
           },
           modifier = Modifier
             .fillMaxWidth()
@@ -58,9 +72,10 @@ fun NoteSaveScreen(note: Note?, noteColors: List<Color>, modifier: Modifier = Mo
           label = { Text(text = stringResource(R.string.title)) },
           placeholder = { Text(text = stringResource(R.string.enter_note_title_here)) })
       TextField(
-          value = note?.body.orEmpty(),
+          value = bodyState,
           onValueChange = {
-
+            bodyState = it
+            onBodyChange(it)
           },
           modifier = Modifier
             .fillMaxWidth()
@@ -76,8 +91,11 @@ fun NoteSaveScreen(note: Note?, noteColors: List<Color>, modifier: Modifier = Mo
             modifier = Modifier.weight(weight = 6f)
         )
         Switch(
-            checked = note?.checkedOff ?: false,
-            onCheckedChange = {}
+            checked = canBeCheckedOffState,
+            onCheckedChange = {
+              canBeCheckedOffState = it
+              onCanBeCheckedOff(it)
+            }
         )
       }
       Row(
@@ -94,15 +112,17 @@ fun NoteSaveScreen(note: Note?, noteColors: List<Color>, modifier: Modifier = Mo
             modifier = Modifier
               .size(size = 32.dp)
               .clip(shape = CircleShape)
-              .background(color = selectedColor, shape = CircleShape)
+              .background(color = colorState, shape = CircleShape)
               .border(width = 1.dp, color = Color.Black, shape = CircleShape)
+              .clickable { showDialog = true }
         )
       }
       if (showDialog) {
         ColorPicker(noteColors = noteColors, onDismiss = {
           showDialog = false
         }, onColorSelect = {
-
+          colorState = it
+          onColorSelect(it)
         })
       }
     }
@@ -153,7 +173,16 @@ fun ColorPicker(
 @Preview
 @Composable
 private fun NoteSaveScreenPrev() {
-  NoteSaveScreen(note = null, noteColors = emptyList())
+  NoteSaveScreen(
+      title = "Note title",
+      body = "Note body..",
+      canBeCheckedOff = false,
+      color = Color.Blue,
+      noteColors = emptyList(),
+      onTitleChange = {},
+      onBodyChange = {},
+      onCanBeCheckedOff = {},
+      onColorSelect = {})
 }
 
 @Preview

@@ -6,6 +6,6 @@ data class Note(
   val id: Int,
   val title: String,
   val body: String,
-  val checkedOff: Boolean,
-  val pickedColor: Color
+  val canBeCheckedOff: Boolean = false,
+  val color: Color = Color.White
 )

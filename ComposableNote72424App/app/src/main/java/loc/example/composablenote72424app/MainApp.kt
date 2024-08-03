@@ -34,9 +34,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -53,19 +55,33 @@ import loc.example.composablenote72424app.vm.NoteListViewModel
 @Composable
 fun MainApp(modifier: Modifier = Modifier) {
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+  val navCtrl = rememberNavController()
   ComposableNote72424AppTheme {
     ModalNavigationDrawer(
-        drawerContent = { DrawerContent() },
+        drawerContent = {
+          DrawerContent(
+              onHomeClick = {
+                navCtrl.navigate(Route.NOTE_LIST.path)
+              },
+              onTrashClick = {
+                navCtrl.navigate(Route.NOTE_TRASH.path)
+              }
+          )
+        },
         modifier = modifier,
         drawerState = drawerState
     ) {
-      MainScreen(drawerState)
+      MainScreen(navCtrl = navCtrl, drawerState = drawerState)
     }
   }
 }
 
 @Composable
-fun DrawerContent(modifier: Modifier = Modifier) {
+fun DrawerContent(
+  modifier: Modifier = Modifier,
+  onHomeClick: () -> Unit,
+  onTrashClick: () -> Unit
+) {
   ModalDrawerSheet(modifier = modifier) {
     Row(
         modifier = Modifier.padding(horizontal = 16.dp),
@@ -89,7 +105,7 @@ fun DrawerContent(modifier: Modifier = Modifier) {
           }
         },
         selected = false,
-        onClick = { /*TODO*/ }
+        onClick = onHomeClick
     )
     NavigationDrawerItem(
         label = {
@@ -105,7 +121,7 @@ fun DrawerContent(modifier: Modifier = Modifier) {
           }
         },
         selected = false,
-        onClick = { /*TODO*/ }
+        onClick = onTrashClick
     )
   }
 }
@@ -113,13 +129,13 @@ fun DrawerContent(modifier: Modifier = Modifier) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
+  navCtrl: NavHostController,
   drawerState: DrawerState,
   modifier: Modifier = Modifier,
   model: NoteListViewModel = viewModel()
 ) {
   val corScope = rememberCoroutineScope()
   @StringRes var appBarTitleRes by remember { mutableIntStateOf(R.string.app_name) }
-  val navCtrl = rememberNavController()
   val navGraph = remember(navCtrl) {
     navCtrl.createGraph(startDestination = Route.NOTE_LIST.path) {
       composable(route = Route.NOTE_LIST.path) {
@@ -136,7 +152,24 @@ fun MainScreen(
         val noteId = it.arguments?.getInt("noteId") ?: 0
         Log.d(TAG, "MainScreen: note id: $noteId")
         val note = model.getNoteById(id = noteId)
-        NoteSaveScreen(note = note, noteColors = model.noteColors)
+        NoteSaveScreen(
+            title = note?.title.orEmpty(),
+            body = note?.body.orEmpty(),
+            color = note?.color ?: Color.White,
+            canBeCheckedOff = note?.canBeCheckedOff ?: false,
+            noteColors = model.noteColors,
+            onTitleChange = {
+              model.updateNoteTitle(id = noteId, title = it)
+            },
+            onBodyChange = {
+              model.updateNoteBody(id = noteId, body = it)
+            },
+            onCanBeCheckedOff = {
+              model.updateCanBeCheckedOff(id = noteId, canBeCheckedOff = it)
+            },
+            onColorSelect = {
+              model.updateNoteColor(id = noteId, color = it)
+            })
       }
     }
   }
