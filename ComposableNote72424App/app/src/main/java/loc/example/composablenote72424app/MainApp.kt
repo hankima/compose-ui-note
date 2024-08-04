@@ -50,9 +50,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
 import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
+import loc.example.composablenote72424app.model.Note
 import loc.example.composablenote72424app.model.Route
 import loc.example.composablenote72424app.screen.NoteListScreen
 import loc.example.composablenote72424app.screen.NoteSaveScreen
+import loc.example.composablenote72424app.screen.NoteTrashScreen
 import loc.example.composablenote72424app.ui.theme.ComposableNote72424AppTheme
 import loc.example.composablenote72424app.vm.NoteListViewModel
 
@@ -69,7 +71,9 @@ fun MainApp(modifier: Modifier = Modifier) {
                 navCtrl.navigate(Route.NOTE_LIST.path)
               },
               onTrashClick = {
-                navCtrl.navigate(Route.NOTE_TRASH.path)
+                navCtrl.navigate(Route.NOTE_TRASH.path) {
+                  popUpTo(Route.NOTE_LIST.path)
+                }
               }
           )
         },
@@ -146,12 +150,12 @@ fun MainScreen(
 ) {
   val corScope = rememberCoroutineScope()
   val navBackStack by navCtrl.currentBackStackEntryAsState()
-  var isNewNote by remember { mutableStateOf(false) }
+  var currNote by remember { mutableStateOf<Note?>(null) }
   val navGraph = remember(navCtrl) {
     navCtrl.createGraph(startDestination = Route.NOTE_LIST.path) {
       composable(route = Route.NOTE_LIST.path) {
         NoteListScreen(model = model, onNoteClick = {
-          navCtrl.navigate("${Route.NOTE_SAVE.path}/${it.id}")
+          navCtrl.navigate(route = "${Route.NOTE_SAVE.path}/${it.id}")
         })
       }
       composable(
@@ -161,7 +165,7 @@ fun MainScreen(
         val noteId = it.arguments?.getInt("noteId") ?: 0
         Log.d(TAG, "MainScreen: note id: $noteId")
         val note = model.getNoteById(id = noteId)
-        isNewNote = (note == null)
+        currNote = note
         NoteSaveScreen(
             title = note?.title.orEmpty(),
             body = note?.body.orEmpty(),
@@ -181,6 +185,16 @@ fun MainScreen(
               model.updateNoteColor(id = noteId, color = it)
             })
       }
+      composable(route = Route.NOTE_TRASH.path) {
+        NoteTrashScreen(
+            trashedNoteIds = model.getTrashedNoteIds(),
+            clickableNoteIds = model.getClickableNoteIds(),
+            onNoteClick = {
+              navCtrl.navigate(route = "${Route.NOTE_SAVE.path}/${it.id}")
+            },
+            model = model
+        )
+      }
     }
   }
   Scaffold(
@@ -188,11 +202,15 @@ fun MainScreen(
       topBar = {
         TopAppBar(
             title = {
-              val strRes =
-                  navBackStack?.destination?.route?.takeIf { it.contains(Route.NOTE_LIST.path) }
-                    ?.let {
-                      Route.getAppBarTitleRes(Route.NOTE_LIST)
-                    } ?: Route.getAppBarTitleRes(Route.NOTE_SAVE)
+              val strRes = navBackStack?.destination?.route?.let {
+                if (it.contains(other = Route.NOTE_SAVE.path, ignoreCase = true)) {
+                  Route.getAppBarTitleRes(Route.NOTE_SAVE)
+                } else if (it.contains(other = Route.NOTE_TRASH.path, ignoreCase = true)) {
+                  Route.getAppBarTitleRes(Route.NOTE_TRASH)
+                } else {
+                  Route.getAppBarTitleRes(Route.NOTE_LIST)
+                }
+              } ?: Route.getAppBarTitleRes(Route.NOTE_LIST)
               Text(
                   text = stringResource(id = strRes),
                   modifier = Modifier.padding(start = 16.dp)
@@ -217,10 +235,7 @@ fun MainScreen(
                     ignoreCase = true
                 )
               }?.let {
-                Row(
-//                    modifier = Modifier.width(width = 152.dp),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
+                Row(horizontalArrangement = Arrangement.SpaceAround) {
                   Icon(
                       imageVector = Icons.Default.Check,
                       contentDescription = null,
@@ -237,13 +252,15 @@ fun MainScreen(
                         .clickable { },
                       tint = MaterialTheme.colorScheme.onPrimary
                   )
-                  if (!isNewNote) {
+                  currNote?.let {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = null,
                         modifier = Modifier
                           .padding(horizontal = 16.dp)
-                          .clickable { },
+                          .clickable {
+                            model.trashNote(note = it)
+                          },
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                   }

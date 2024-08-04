@@ -63,6 +63,19 @@ class NoteListViewModel @Inject constructor() : ViewModel() {
       state.copy(notes = state.notes.map { if (it.id == id) it.copy(color = color) else it })
     }
   }
+
+  fun trashNote(note: Note) {
+    note.isTrashed = true
+  }
+
+  fun getTrashedNoteIds(): List<Int> =
+      _uiState.value.notes.filter { it.isTrashed }.map { it.id }
+
+  fun getNoteByIds(ids: List<Int>): List<Note> =
+      _uiState.value.notes.filter { it.id in ids }
+
+  fun getClickableNoteIds(): List<Int> =
+      _uiState.value.notes.filter { it.canBeCheckedOff }.map { it.id }
 }
 
 data class NoteUiState(

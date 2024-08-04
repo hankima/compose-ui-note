@@ -7,5 +7,6 @@ data class Note(
   val title: String,
   val body: String,
   val canBeCheckedOff: Boolean = false,
-  val color: Color = Color.White
+  val color: Color = Color.White,
+  var isTrashed: Boolean = false
 )
